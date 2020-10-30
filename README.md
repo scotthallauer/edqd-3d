@@ -12,3 +12,6 @@
 - Robot Body Shape: Cylinder
 - Robot Body Diameter: (5px / 956px) * 25m = 0.1307531381...m = ~0.13m
 - Robot Body Height: 0.05m
+- Robot Wheel Diameter: 0.06m
+- Robot Wheel Depth: 0.01m
+- Robot Right Wheel Position: (0.07, 0.0, 0.025)
