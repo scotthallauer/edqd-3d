@@ -22,10 +22,17 @@
 - Robot Right Wheel Position: (0.07, 0.0, 0.03)
 - Total Front Sensors: 7
 - Front Sensor Positions: 
-    - Front Left: (-0.04619, 0.04587, 0.03)
-    - Front Centre-Left: (-0.02488, 0.06255, 0.03)
+    - Front Left 3: (-0.04619, 0.04587, 0.03)
+    - Front Left 2: (-0.0325, 0.05629, 0.03)
+    - Front Left 1: (-0.01682, 0.06279, 0.03)
     - Front Centre: (0.0, 0.065, 0.03)
-    - Front Centre-Right: (0.02488, 0.06255, 0.03)
-    - Front Right: (0.04619, 0.04587, 0.03)
+    - Front Right 1: (0.01682, 0.06279, 0.03)
+    - Front Right 2: (0.0325, 0.05629, 0.03)
+    - Front Right 3: (0.04619, 0.04587, 0.03)
 - Total Back Sensors: 5
+    - Back Left 2: (-0.075, 0.0, 0.03) –> X = -0.075 to place it on the left wheel
+    - Back Left 1: (-0.04596, -0.04596, 0.03)
+    - Back Centre: (0.0, -0.065, 0.03)
+    - Back Right 1: (0.04596, -0.04596, 0.03)
+    - Back Right 2: (0.075, 0.0, 0.03) –> X = 0.075 to place it on the right wheel
 - Back Sensor Positions: Evenly spaced around the remainder of the body
