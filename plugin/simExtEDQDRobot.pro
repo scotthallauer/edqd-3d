@@ -1,7 +1,7 @@
 QT -= core
 QT -= gui
 
-TARGET = simExtBubbleRob
+TARGET = simExtEDQDRobot
 TEMPLATE = lib
 
 DEFINES -= UNICODE
@@ -55,13 +55,13 @@ unix:!symbian {
 }
 
 HEADERS += \
-    simExtBubbleRob.h \
+    simExtEDQDRobot.h \
     ../include/scriptFunctionData.h \
     ../include/scriptFunctionDataItem.h \
     ../include/simLib.h 
 
 SOURCES += \
-    simExtBubbleRob.cpp \
+    simExtEDQDRobot.cpp \
     ../common/scriptFunctionData.cpp \
     ../common/scriptFunctionDataItem.cpp \
     ../common/simLib.cpp

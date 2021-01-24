@@ -1,4 +1,4 @@
-#include "simExtBubbleRob.h"
+#include "simExtEDQDRobot.h"
 #include "scriptFunctionData.h"
 #include <iostream>
 #include "simLib.h"
@@ -19,11 +19,11 @@
 #define CONCAT(x,y,z) x y z
 #define strConCat(x,y,z)    CONCAT(x,y,z)
 
-#define PLUGIN_NAME "BubbleRob"
+#define PLUGIN_NAME "EDQDRobot"
 
 static LIBRARY simLib;
 
-struct sBubbleRob
+struct sEDQDRobot
 {
     int handle;
     int motorHandles[2];
@@ -33,23 +33,23 @@ struct sBubbleRob
     float backMovementDuration;
 };
 
-static std::vector<sBubbleRob> allBubbleRobs;
-static int nextBubbleRobHandle=0;
+static std::vector<sEDQDRobot> allEDQDRobots;
+static int nextEDQDRobotHandle=0;
 
-int getBubbleRobIndexFromHandle(int bubbleRobHandle)
+int getEDQDRobotIndexFromHandle(int EDQDRobotHandle)
 {
-    for (unsigned int i=0;i<allBubbleRobs.size();i++)
+    for (unsigned int i=0;i<allEDQDRobots.size();i++)
     {
-        if (allBubbleRobs[i].handle==bubbleRobHandle)
+        if (allEDQDRobots[i].handle==EDQDRobotHandle)
             return(i);
     }
     return(-1);
 }
 
 // --------------------------------------------------------------------------------------
-// simExtBubble_create
+// simExtEDQD_create
 // --------------------------------------------------------------------------------------
-#define LUA_CREATE_COMMAND "simBubble.create"
+#define LUA_CREATE_COMMAND "simEDQD.create"
 
 const int inArgs_CREATE[]={
     3,
@@ -65,16 +65,16 @@ void LUA_CREATE_CALLBACK(SScriptCallBack* cb)
     if (D.readDataFromStack(cb->stackID,inArgs_CREATE,inArgs_CREATE[0],LUA_CREATE_COMMAND))
     {
         std::vector<CScriptFunctionDataItem>* inData=D.getInDataPtr();
-        sBubbleRob bubbleRob;
-        handle=nextBubbleRobHandle++;
-        bubbleRob.handle=handle;
-        bubbleRob.motorHandles[0]=inData->at(0).int32Data[0];
-        bubbleRob.motorHandles[1]=inData->at(0).int32Data[1];
-        bubbleRob.sensorHandle=inData->at(1).int32Data[0];
-        bubbleRob.backRelativeVelocities[0]=inData->at(2).floatData[0];
-        bubbleRob.backRelativeVelocities[1]=inData->at(2).floatData[1];
-        bubbleRob.run=false;
-        allBubbleRobs.push_back(bubbleRob);
+        sEDQDRobot EDQDRobot;
+        handle=nextEDQDRobotHandle++;
+        EDQDRobot.handle=handle;
+        EDQDRobot.motorHandles[0]=inData->at(0).int32Data[0];
+        EDQDRobot.motorHandles[1]=inData->at(0).int32Data[1];
+        EDQDRobot.sensorHandle=inData->at(1).int32Data[0];
+        EDQDRobot.backRelativeVelocities[0]=inData->at(2).floatData[0];
+        EDQDRobot.backRelativeVelocities[1]=inData->at(2).floatData[1];
+        EDQDRobot.run=false;
+        allEDQDRobots.push_back(EDQDRobot);
     }
     D.pushOutData(CScriptFunctionDataItem(handle));
     D.writeDataToStack(cb->stackID);
@@ -82,9 +82,9 @@ void LUA_CREATE_CALLBACK(SScriptCallBack* cb)
 // --------------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------------
-// simExtBubble_destroy
+// simExtEDQD_destroy
 // --------------------------------------------------------------------------------------
-#define LUA_DESTROY_COMMAND "simBubble.destroy"
+#define LUA_DESTROY_COMMAND "simEDQD.destroy"
 
 const int inArgs_DESTROY[]={
     1,
@@ -99,14 +99,14 @@ void LUA_DESTROY_CALLBACK(SScriptCallBack* cb)
     {
         std::vector<CScriptFunctionDataItem>* inData=D.getInDataPtr();
         int handle=inData->at(0).int32Data[0];
-        int index=getBubbleRobIndexFromHandle(handle);
+        int index=getEDQDRobotIndexFromHandle(handle);
         if (index>=0)
         {
-            allBubbleRobs.erase(allBubbleRobs.begin()+index);
+            allEDQDRobots.erase(allEDQDRobots.begin()+index);
             success=true;
         }
         else
-            simSetLastError(LUA_DESTROY_COMMAND,"Invalid BubbleRob handle.");
+            simSetLastError(LUA_DESTROY_COMMAND,"Invalid EDQDRobot handle.");
     }
     D.pushOutData(CScriptFunctionDataItem(success));
     D.writeDataToStack(cb->stackID);
@@ -115,9 +115,9 @@ void LUA_DESTROY_CALLBACK(SScriptCallBack* cb)
 
 
 // --------------------------------------------------------------------------------------
-// simExtBubble_start
+// simExtEDQD_start
 // --------------------------------------------------------------------------------------
-#define LUA_START_COMMAND "simBubble.start"
+#define LUA_START_COMMAND "simEDQD.start"
 
 const int inArgs_START[]={
     1,
@@ -132,15 +132,15 @@ void LUA_START_CALLBACK(SScriptCallBack* cb)
     {
         std::vector<CScriptFunctionDataItem>* inData=D.getInDataPtr();
         int handle=inData->at(0).int32Data[0];
-        int index=getBubbleRobIndexFromHandle(handle);
+        int index=getEDQDRobotIndexFromHandle(handle);
         if (index!=-1)
         {
-            allBubbleRobs[index].backMovementDuration=0.0f;
-            allBubbleRobs[index].run=true;
+            allEDQDRobots[index].backMovementDuration=0.0f;
+            allEDQDRobots[index].run=true;
             success=true;
         }
         else
-            simSetLastError(LUA_START_COMMAND,"Invalid BubbleRob handle.");
+            simSetLastError(LUA_START_COMMAND,"Invalid EDQDRobot handle.");
     }
     D.pushOutData(CScriptFunctionDataItem(success));
     D.writeDataToStack(cb->stackID);
@@ -148,9 +148,9 @@ void LUA_START_CALLBACK(SScriptCallBack* cb)
 // --------------------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------------------
-// simExtBubble_stop
+// simExtEDQD_stop
 // --------------------------------------------------------------------------------------
-#define LUA_STOP_COMMAND "simBubble.stop"
+#define LUA_STOP_COMMAND "simEDQD.stop"
 
 const int inArgs_STOP[]={
     1,
@@ -165,16 +165,16 @@ void LUA_STOP_CALLBACK(SScriptCallBack* cb)
     {
         std::vector<CScriptFunctionDataItem>* inData=D.getInDataPtr();
         int handle=inData->at(0).int32Data[0];
-        int index=getBubbleRobIndexFromHandle(handle);
+        int index=getEDQDRobotIndexFromHandle(handle);
         if (index!=-1)
         {
-            allBubbleRobs[index].run=false;
-            simSetJointTargetVelocity(allBubbleRobs[index].motorHandles[0],0.0f);
-            simSetJointTargetVelocity(allBubbleRobs[index].motorHandles[1],0.0f);
+            allEDQDRobots[index].run=false;
+            simSetJointTargetVelocity(allEDQDRobots[index].motorHandles[0],0.0f);
+            simSetJointTargetVelocity(allEDQDRobots[index].motorHandles[1],0.0f);
             success=true;
         }
         else
-            simSetLastError(LUA_STOP_COMMAND,"Invalid BubbleRob handle.");
+            simSetLastError(LUA_STOP_COMMAND,"Invalid EDQDRobot handle.");
     }
     D.pushOutData(CScriptFunctionDataItem(success));
     D.writeDataToStack(cb->stackID);
@@ -211,33 +211,26 @@ SIM_DLLEXPORT unsigned char simStart(void* reservedPointer,int reservedInt)
     simLib=loadSimLibrary(temp.c_str());
     if (simLib==NULL)
     {
-        printf("simExtBubbleRob: error: could not find or correctly load coppeliaSim.dll. Cannot start the plugin.\n"); // cannot use simAddLog here.
+        printf("simExtEDQDRobot: error: could not find or correctly load coppeliaSim.dll. Cannot start the plugin.\n"); // cannot use simAddLog here.
         return(0); // Means error, CoppeliaSim will unload this plugin
     }
     if (getSimProcAddresses(simLib)==0)
     {
-        printf("simExtBubbleRob: error: could not find all required functions in coppeliaSim.dll. Cannot start the plugin.\n"); // cannot use simAddLog here.
+        printf("simExtEDQDRobot: error: could not find all required functions in coppeliaSim.dll. Cannot start the plugin.\n"); // cannot use simAddLog here.
         unloadSimLibrary(simLib);
         return(0); // Means error, CoppeliaSim will unload this plugin
     }
 
-    simRegisterScriptVariable("simBubble","require('simExtBubbleRob')",0);
+    simRegisterScriptVariable("simEDQD","require('simExtEDQDRobot')",0);
 
     // Register the new functions:
-    simRegisterScriptCallbackFunction(strConCat(LUA_CREATE_COMMAND,"@",PLUGIN_NAME),strConCat("number bubbleRobHandle=",LUA_CREATE_COMMAND,"(table_2 motorJointHandles,number sensorHandle,table_2 backRelativeVelocities)"),LUA_CREATE_CALLBACK);
-    simRegisterScriptCallbackFunction(strConCat(LUA_DESTROY_COMMAND,"@",PLUGIN_NAME),strConCat("boolean result=",LUA_DESTROY_COMMAND,"(number bubbleRobHandle)"),LUA_DESTROY_CALLBACK);
-    simRegisterScriptCallbackFunction(strConCat(LUA_START_COMMAND,"@",PLUGIN_NAME),strConCat("boolean result=",LUA_START_COMMAND,"(number bubbleRobHandle)"),LUA_START_CALLBACK);
-    simRegisterScriptCallbackFunction(strConCat(LUA_STOP_COMMAND,"@",PLUGIN_NAME),strConCat("boolean result=",LUA_STOP_COMMAND,"(number bubbleRobHandle)"),LUA_STOP_CALLBACK);
+    simRegisterScriptCallbackFunction(strConCat(LUA_CREATE_COMMAND,"@",PLUGIN_NAME),strConCat("number EDQDRobotHandle=",LUA_CREATE_COMMAND,"(table_2 motorJointHandles,number sensorHandle,table_2 backRelativeVelocities)"),LUA_CREATE_CALLBACK);
+    simRegisterScriptCallbackFunction(strConCat(LUA_DESTROY_COMMAND,"@",PLUGIN_NAME),strConCat("boolean result=",LUA_DESTROY_COMMAND,"(number EDQDRobotHandle)"),LUA_DESTROY_CALLBACK);
+    simRegisterScriptCallbackFunction(strConCat(LUA_START_COMMAND,"@",PLUGIN_NAME),strConCat("boolean result=",LUA_START_COMMAND,"(number EDQDRobotHandle)"),LUA_START_CALLBACK);
+    simRegisterScriptCallbackFunction(strConCat(LUA_STOP_COMMAND,"@",PLUGIN_NAME),strConCat("boolean result=",LUA_STOP_COMMAND,"(number EDQDRobotHandle)"),LUA_STOP_CALLBACK);
 
-    return(10); // initialization went fine, we return the version number of this plugin (can be queried with simGetModuleName)
-    // version 1 was for CoppeliaSim versions before CoppeliaSim 2.5.12
-    // version 2 was for CoppeliaSim versions before CoppeliaSim 2.6.0
-    // version 5 was for CoppeliaSim versions before CoppeliaSim 3.1.0
-    // version 6 is for CoppeliaSim versions after CoppeliaSim 3.1.3
-    // version 7 is for CoppeliaSim versions after CoppeliaSim 3.2.0 (completely rewritten)
-    // version 8 is for CoppeliaSim versions after CoppeliaSim 3.3.0 (using stacks for data exchange with scripts)
-    // version 9 is for CoppeliaSim versions after CoppeliaSim 3.4.0 (new API notation)
-    // version 10 is for CoppeliaSim versions after CoppeliaSim 4.1.0 (threads via coroutines)
+    return(1); // initialization went fine, we return the version number of this plugin (can be queried with simGetModuleName)
+    // version 1 was for CoppeliaSim versions after CoppeliaSim 4.1.0
 }
 
 SIM_DLLEXPORT void simEnd()
@@ -256,25 +249,25 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
 
     if (message==sim_message_eventcallback_modulehandle)
     {
-        if ( (customData==NULL)||(std::string("BubbleRob").compare((char*)customData)==0) ) // is the command also meant for BubbleRob?
+        if ( (customData==NULL)||(std::string("EDQDRobot").compare((char*)customData)==0) ) // is the command also meant for EDQDRobot?
         {
             float dt=simGetSimulationTimeStep();
-            for (unsigned int i=0;i<allBubbleRobs.size();i++)
+            for (unsigned int i=0;i<allEDQDRobots.size();i++)
             {
-                if (allBubbleRobs[i].run)
+                if (allEDQDRobots[i].run)
                 { // movement mode
-                    if (simReadProximitySensor(allBubbleRobs[i].sensorHandle,NULL,NULL,NULL)>0)
-                        allBubbleRobs[i].backMovementDuration=3.0f; // we detected an obstacle, we move backward for 3 seconds
-                    if (allBubbleRobs[i].backMovementDuration>0.0f)
+                    if (simReadProximitySensor(allEDQDRobots[i].sensorHandle,NULL,NULL,NULL)>0)
+                        allEDQDRobots[i].backMovementDuration=3.0f; // we detected an obstacle, we move backward for 3 seconds
+                    if (allEDQDRobots[i].backMovementDuration>0.0f)
                     { // We move backward
-                        simSetJointTargetVelocity(allBubbleRobs[i].motorHandles[0],-7.0f*allBubbleRobs[i].backRelativeVelocities[0]);
-                        simSetJointTargetVelocity(allBubbleRobs[i].motorHandles[1],-7.0f*allBubbleRobs[i].backRelativeVelocities[1]);
-                        allBubbleRobs[i].backMovementDuration-=dt;
+                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[0],-7.0f*allEDQDRobots[i].backRelativeVelocities[0]);
+                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[1],-7.0f*allEDQDRobots[i].backRelativeVelocities[1]);
+                        allEDQDRobots[i].backMovementDuration-=dt;
                     }
                     else
                     { // We move forward
-                        simSetJointTargetVelocity(allBubbleRobs[i].motorHandles[0],7.0f);
-                        simSetJointTargetVelocity(allBubbleRobs[i].motorHandles[1],7.0f);
+                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[0],7.0f);
+                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[1],7.0f);
                     }
                 }
             }
@@ -282,8 +275,8 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
     }
 
     if (message==sim_message_eventcallback_simulationended)
-    { // simulation ended. Destroy all BubbleRob instances:
-        allBubbleRobs.clear();
+    { // simulation ended. Destroy all EDQDRobot instances:
+        allEDQDRobots.clear();
     }
 
     simSetIntegerParameter(sim_intparam_error_report_mode,errorModeSaved); // restore previous settings
