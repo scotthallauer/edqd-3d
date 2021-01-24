@@ -27,7 +27,7 @@ struct sEDQDRobot
 {
     int handle;
     int motorHandles[2];
-    int sensorHandle;
+    int sensorHandles[12];
     float backRelativeVelocities[2];
     bool run;
     float backMovementDuration;
@@ -54,7 +54,7 @@ int getEDQDRobotIndexFromHandle(int EDQDRobotHandle)
 const int inArgs_CREATE[]={
     3,
     sim_script_arg_int32|sim_script_arg_table,2,
-    sim_script_arg_int32,0,
+    sim_script_arg_int32|sim_script_arg_table,12,
     sim_script_arg_float|sim_script_arg_table,2,
 };
 
@@ -70,7 +70,10 @@ void LUA_CREATE_CALLBACK(SScriptCallBack* cb)
         EDQDRobot.handle=handle;
         EDQDRobot.motorHandles[0]=inData->at(0).int32Data[0];
         EDQDRobot.motorHandles[1]=inData->at(0).int32Data[1];
-        EDQDRobot.sensorHandle=inData->at(1).int32Data[0];
+        for (unsigned int i=0;i<12;i++)
+        {
+            EDQDRobot.sensorHandles[i]=inData->at(1).int32Data[i];
+        }
         EDQDRobot.backRelativeVelocities[0]=inData->at(2).floatData[0];
         EDQDRobot.backRelativeVelocities[1]=inData->at(2).floatData[1];
         EDQDRobot.run=false;
@@ -256,7 +259,7 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
             {
                 if (allEDQDRobots[i].run)
                 { // movement mode
-                    if (simReadProximitySensor(allEDQDRobots[i].sensorHandle,NULL,NULL,NULL)>0)
+                    if (simReadProximitySensor(allEDQDRobots[i].sensorHandles[3],NULL,NULL,NULL)>0)
                         allEDQDRobots[i].backMovementDuration=3.0f; // we detected an obstacle, we move backward for 3 seconds
                     if (allEDQDRobots[i].backMovementDuration>0.0f)
                     { // We move backward
