@@ -35,6 +35,7 @@ struct sEDQDRobot
 
 static std::vector<sEDQDRobot> allEDQDRobots;
 static int nextEDQDRobotHandle=0;
+static int logConsoleHandle=0;
 
 int getEDQDRobotIndexFromHandle(int EDQDRobotHandle)
 {
@@ -78,6 +79,7 @@ void LUA_CREATE_CALLBACK(SScriptCallBack* cb)
         EDQDRobot.backRelativeVelocities[1]=inData->at(2).floatData[1];
         EDQDRobot.run=false;
         allEDQDRobots.push_back(EDQDRobot);
+        simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot created.\n");
     }
     D.pushOutData(CScriptFunctionDataItem(handle));
     D.writeDataToStack(cb->stackID);
@@ -106,6 +108,7 @@ void LUA_DESTROY_CALLBACK(SScriptCallBack* cb)
         if (index>=0)
         {
             allEDQDRobots.erase(allEDQDRobots.begin()+index);
+            simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot destroyed.\n");
             success=true;
         }
         else
@@ -140,6 +143,7 @@ void LUA_START_CALLBACK(SScriptCallBack* cb)
         {
             allEDQDRobots[index].backMovementDuration=0.0f;
             allEDQDRobots[index].run=true;
+            simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot started.\n");
             success=true;
         }
         else
@@ -174,6 +178,7 @@ void LUA_STOP_CALLBACK(SScriptCallBack* cb)
             allEDQDRobots[index].run=false;
             simSetJointTargetVelocity(allEDQDRobots[index].motorHandles[0],0.0f);
             simSetJointTargetVelocity(allEDQDRobots[index].motorHandles[1],0.0f);
+            simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot stopped.\n");
             success=true;
         }
         else
@@ -231,6 +236,9 @@ SIM_DLLEXPORT unsigned char simStart(void* reservedPointer,int reservedInt)
     simRegisterScriptCallbackFunction(strConCat(LUA_DESTROY_COMMAND,"@",PLUGIN_NAME),strConCat("boolean result=",LUA_DESTROY_COMMAND,"(number EDQDRobotHandle)"),LUA_DESTROY_CALLBACK);
     simRegisterScriptCallbackFunction(strConCat(LUA_START_COMMAND,"@",PLUGIN_NAME),strConCat("boolean result=",LUA_START_COMMAND,"(number EDQDRobotHandle)"),LUA_START_CALLBACK);
     simRegisterScriptCallbackFunction(strConCat(LUA_STOP_COMMAND,"@",PLUGIN_NAME),strConCat("boolean result=",LUA_STOP_COMMAND,"(number EDQDRobotHandle)"),LUA_STOP_CALLBACK);
+
+    // Open console for logging events in the plugin (intended for development)
+    logConsoleHandle=simAuxiliaryConsoleOpen("EDQD Plugin Log",20,23,nullptr,nullptr,nullptr,nullptr);
 
     return(1); // initialization went fine, we return the version number of this plugin (can be queried with simGetModuleName)
     // version 1 was for CoppeliaSim versions after CoppeliaSim 4.1.0
