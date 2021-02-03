@@ -1,4 +1,5 @@
 #include "simExtEDQDRobot.h"
+#include "Robot.h"
 #include "scriptFunctionData.h"
 #include <iostream>
 #include "simLib.h"
@@ -23,25 +24,28 @@
 
 static LIBRARY simLib;
 
-struct sEDQDRobot
-{
-    int handle;
-    int motorHandles[2];
-    int sensorHandles[12];
-    float backRelativeVelocities[2];
-    bool run;
-    float backMovementDuration;
-};
+//struct sEDQDRobot
+//{
+//    int handle;
+//    int motorHandles[2];
+//    int sensorHandles[12];
+//    float backRelativeVelocities[2];
+//    bool run;
+//    float backMovementDuration;
+//};
 
-static std::vector<sEDQDRobot> allEDQDRobots;
+//static std::vector<sEDQDRobot> allEDQDRobots;
+static std::vector<Robot*> allRobots;
 static int nextEDQDRobotHandle=0;
 static int logConsoleHandle=0;
 
 int getEDQDRobotIndexFromHandle(int EDQDRobotHandle)
 {
-    for (unsigned int i=0;i<allEDQDRobots.size();i++)
+//    for (unsigned int i=0;i<allEDQDRobots.size();i++)
+    for (unsigned int i=0;i<allRobots.size();i++)
     {
-        if (allEDQDRobots[i].handle==EDQDRobotHandle)
+//        if (allEDQDRobots[i].handle==EDQDRobotHandle)
+        if (allRobots[i]->getHandle()==EDQDRobotHandle)
             return(i);
     }
     return(-1);
@@ -66,19 +70,29 @@ void LUA_CREATE_CALLBACK(SScriptCallBack* cb)
     if (D.readDataFromStack(cb->stackID,inArgs_CREATE,inArgs_CREATE[0],LUA_CREATE_COMMAND))
     {
         std::vector<CScriptFunctionDataItem>* inData=D.getInDataPtr();
-        sEDQDRobot EDQDRobot;
+//        sEDQDRobot EDQDRobot;
         handle=nextEDQDRobotHandle++;
-        EDQDRobot.handle=handle;
-        EDQDRobot.motorHandles[0]=inData->at(0).int32Data[0];
-        EDQDRobot.motorHandles[1]=inData->at(0).int32Data[1];
+//        EDQDRobot.handle=handle;
+//        EDQDRobot.motorHandles[0]=inData->at(0).int32Data[0];
+//        EDQDRobot.motorHandles[1]=inData->at(0).int32Data[1];
+        std::vector<int> motorHandles;
+        motorHandles.push_back(inData->at(0).int32Data[0]);
+        motorHandles.push_back(inData->at(0).int32Data[1]);
+        std::vector<int> sensorHandles;
         for (unsigned int i=0;i<12;i++)
         {
-            EDQDRobot.sensorHandles[i]=inData->at(1).int32Data[i];
+//            EDQDRobot.sensorHandles[i]=inData->at(1).int32Data[i];
+            sensorHandles.push_back(inData->at(1).int32Data[i]);
         }
-        EDQDRobot.backRelativeVelocities[0]=inData->at(2).floatData[0];
-        EDQDRobot.backRelativeVelocities[1]=inData->at(2).floatData[1];
-        EDQDRobot.run=false;
-        allEDQDRobots.push_back(EDQDRobot);
+//        EDQDRobot.backRelativeVelocities[0]=inData->at(2).floatData[0];
+//        EDQDRobot.backRelativeVelocities[1]=inData->at(2).floatData[1];
+        std::vector<float> backRelativeVelocities;
+        backRelativeVelocities.push_back(inData->at(2).floatData[0]);
+        backRelativeVelocities.push_back(inData->at(2).floatData[1]);
+//        EDQDRobot.run=false;
+        Robot *robot = new Robot(handle, motorHandles, sensorHandles, backRelativeVelocities);
+//        allEDQDRobots.push_back(EDQDRobot);
+        allRobots.push_back(robot);
         simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot created.\n");
     }
     D.pushOutData(CScriptFunctionDataItem(handle));
@@ -107,7 +121,8 @@ void LUA_DESTROY_CALLBACK(SScriptCallBack* cb)
         int index=getEDQDRobotIndexFromHandle(handle);
         if (index>=0)
         {
-            allEDQDRobots.erase(allEDQDRobots.begin()+index);
+//            allEDQDRobots.erase(allEDQDRobots.begin()+index);
+            allRobots.erase(allRobots.begin()+index);
             simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot destroyed.\n");
             success=true;
         }
@@ -141,8 +156,9 @@ void LUA_START_CALLBACK(SScriptCallBack* cb)
         int index=getEDQDRobotIndexFromHandle(handle);
         if (index!=-1)
         {
-            allEDQDRobots[index].backMovementDuration=0.0f;
-            allEDQDRobots[index].run=true;
+//            allEDQDRobots[index].backMovementDuration=0.0f;
+//            allEDQDRobots[index].run=true;
+            allRobots[index]->start();
             simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot started.\n");
             success=true;
         }
@@ -175,9 +191,11 @@ void LUA_STOP_CALLBACK(SScriptCallBack* cb)
         int index=getEDQDRobotIndexFromHandle(handle);
         if (index!=-1)
         {
-            allEDQDRobots[index].run=false;
-            simSetJointTargetVelocity(allEDQDRobots[index].motorHandles[0],0.0f);
-            simSetJointTargetVelocity(allEDQDRobots[index].motorHandles[1],0.0f);
+//            allEDQDRobots[index].run=false;
+            allRobots[index]->stop();
+//            simSetJointTargetVelocity(allEDQDRobots[index].motorHandles[0],0.0f);
+//            simSetJointTargetVelocity(allEDQDRobots[index].motorHandles[1],0.0f);
+            allRobots[index]->setTargetVelocityAllMotors(0.0f);
             simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot stopped.\n");
             success=true;
         }
@@ -263,22 +281,31 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
         if ( (customData==NULL)||(std::string("EDQDRobot").compare((char*)customData)==0) ) // is the command also meant for EDQDRobot?
         {
             float dt=simGetSimulationTimeStep();
-            for (unsigned int i=0;i<allEDQDRobots.size();i++)
+//            for (unsigned int i=0;i<allEDQDRobots.size();i++)
+            for (unsigned int i=0;i<allRobots.size();i++)
             {
-                if (allEDQDRobots[i].run)
+//                if (allEDQDRobots[i].run)
+                if (allRobots[i]->isRunning())
                 { // movement mode
-                    if (simReadProximitySensor(allEDQDRobots[i].sensorHandles[3],NULL,NULL,NULL)>0)
-                        allEDQDRobots[i].backMovementDuration=3.0f; // we detected an obstacle, we move backward for 3 seconds
-                    if (allEDQDRobots[i].backMovementDuration>0.0f)
+//                    if (simReadProximitySensor(allEDQDRobots[i].sensorHandles[3],NULL,NULL,NULL)>0)
+                    if (allRobots[i]->readSensor(3)>0)
+//                        allEDQDRobots[i].backMovementDuration=3.0f; // we detected an obstacle, we move backward for 3 seconds
+                        allRobots[i]->setBackMovementDuration(3.0f);
+//                    if (allEDQDRobots[i].backMovementDuration>0.0f)
+                    if (allRobots[i]->getBackMovementDuration()>0.0f)
                     { // We move backward
-                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[0],-7.0f*allEDQDRobots[i].backRelativeVelocities[0]);
-                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[1],-7.0f*allEDQDRobots[i].backRelativeVelocities[1]);
-                        allEDQDRobots[i].backMovementDuration-=dt;
+//                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[0],-7.0f*allEDQDRobots[i].backRelativeVelocities[0]);
+//                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[1],-7.0f*allEDQDRobots[i].backRelativeVelocities[1]);
+                        allRobots[i]->setTargetVelocitySingleMotor(0, -7.0f*allRobots[i]->getBackRelativeVelocity(0));
+                        allRobots[i]->setTargetVelocitySingleMotor(1, -7.0f*allRobots[i]->getBackRelativeVelocity(1));
+//                        allEDQDRobots[i].backMovementDuration-=dt;
+                        allRobots[i]->setBackMovementDuration(allRobots[i]->getBackMovementDuration()-dt);
                     }
                     else
                     { // We move forward
-                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[0],7.0f);
-                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[1],7.0f);
+//                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[0],7.0f);
+//                        simSetJointTargetVelocity(allEDQDRobots[i].motorHandles[1],7.0f);
+                        allRobots[i]->setTargetVelocityAllMotors(7.0f);
                     }
                 }
             }
@@ -287,7 +314,8 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
 
     if (message==sim_message_eventcallback_simulationended)
     { // simulation ended. Destroy all EDQDRobot instances:
-        allEDQDRobots.clear();
+//        allEDQDRobots.clear();
+        allRobots.clear();
     }
 
     simSetIntegerParameter(sim_intparam_error_report_mode,errorModeSaved); // restore previous settings

@@ -8,6 +8,7 @@ DEFINES -= UNICODE
 DEFINES += QT_COMPIL
 CONFIG += shared plugin
 INCLUDEPATH += "../include"
+INCLUDEPATH += "EDQD-3D/include"
 
 *-msvc* {
     QMAKE_CXXFLAGS += -O2
@@ -56,12 +57,14 @@ unix:!symbian {
 
 HEADERS += \
     simExtEDQDRobot.h \
+    EDQD-3D/include/Robot.h \
     ../include/scriptFunctionData.h \
     ../include/scriptFunctionDataItem.h \
     ../include/simLib.h 
 
 SOURCES += \
     simExtEDQDRobot.cpp \
+    EDQD-3D/src/Robot.cpp \
     ../common/scriptFunctionData.cpp \
     ../common/scriptFunctionDataItem.cpp \
     ../common/simLib.cpp
