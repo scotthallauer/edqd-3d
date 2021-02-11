@@ -10,8 +10,9 @@ Start by creating a directory (named after the plugin) in CoppeliaSim's programm
 
 On macOS, this new directory will be located at: `/Applications/coppeliaSim.app/Contents/Resources/programming/simExtEDQDRobot`.
 
-Thereafter, move the following files into that new directory:
+Thereafter, move the following files and folders into that new directory:
 
+- `EDQD-3D/`
 - `simExtEDQDRobot.cpp`
 - `simExtEDQDRobot.h`
 - `simExtEDQDRobot.pro`

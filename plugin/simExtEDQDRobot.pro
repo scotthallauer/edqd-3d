@@ -58,6 +58,7 @@ unix:!symbian {
 HEADERS += \
     simExtEDQDRobot.h \
     EDQD-3D/include/Robot.h \
+    EDQD-3D/include/EDQDRobot.h \
     ../include/scriptFunctionData.h \
     ../include/scriptFunctionDataItem.h \
     ../include/simLib.h 
@@ -65,6 +66,7 @@ HEADERS += \
 SOURCES += \
     simExtEDQDRobot.cpp \
     EDQD-3D/src/Robot.cpp \
+    EDQD-3D/src/EDQDRobot.cpp \
     ../common/scriptFunctionData.cpp \
     ../common/scriptFunctionDataItem.cpp \
     ../common/simLib.cpp

@@ -10,22 +10,17 @@
 
 class Robot {
   
-  private:
+  protected:
 
     int _handle;
     bool _run;
-    float _backMovementDuration;
     std::vector<int> _motorHandles;
     std::vector<int> _sensorHandles;
-    std::vector<float>_backRelativeVelocities;
 
   public:
 
-		Robot(int handle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities);
+		Robot(int handle, std::vector<int> motorHandles, std::vector<int> sensorHandles);
     int getHandle();
-    void setBackMovementDuration(float backMovementDuration);
-    float getBackMovementDuration();
-    float getBackRelativeVelocity(int motorIndex);
     bool setTargetVelocitySingleMotor(int motorIndex, float targetVelocity);
     bool setTargetVelocityAllMotors(float targetVelocity);
     int readSensor(int sensorIndex);

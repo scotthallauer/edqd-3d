@@ -1,29 +1,15 @@
 #include "EDQD-3D/include/Robot.h"
 #include "simLib.h"
 
-Robot::Robot(int handle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities) {
+Robot::Robot(int handle, std::vector<int> motorHandles, std::vector<int> sensorHandles) {
 	_handle = handle;
   _run = false;
-  _backMovementDuration = 0.0f;
-  _backRelativeVelocities = backRelativeVelocities;
   _motorHandles = motorHandles;
   _sensorHandles = sensorHandles;
 }
 
 int Robot::getHandle() {
   return _handle;
-}
-
-void Robot::setBackMovementDuration(float backMovementDuration) {
-  _backMovementDuration = backMovementDuration;
-}
-
-float Robot::getBackMovementDuration() {
-  return _backMovementDuration;
-}
-
-float Robot::getBackRelativeVelocity(int motorIndex) {
-  return _backRelativeVelocities[motorIndex];
 }
 
 bool Robot::setTargetVelocitySingleMotor(int motorIndex, float targetVelocity) {
