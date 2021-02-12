@@ -6,6 +6,8 @@ EDQDRobot::EDQDRobot(int handle, std::vector<int> motorHandles, std::vector<int>
   _backRelativeVelocities = backRelativeVelocities;
 }
 
+EDQDRobot::~EDQDRobot() {}
+
 void EDQDRobot::setBackMovementDuration(float backMovementDuration) {
   _backMovementDuration = backMovementDuration;
 }

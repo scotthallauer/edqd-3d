@@ -5,6 +5,8 @@ CylinderEDQDRobot::CylinderEDQDRobot(int handle, std::vector<int> motorHandles, 
   : EDQDRobot(handle, motorHandles, sensorHandles, backRelativeVelocities) {
 }
 
+CylinderEDQDRobot::~CylinderEDQDRobot() {}
+
 void CylinderEDQDRobot::stepController(float timeStep) {
   if (this->isRunning())
   { // movement mode

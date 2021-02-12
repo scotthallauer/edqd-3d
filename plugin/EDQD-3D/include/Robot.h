@@ -6,6 +6,10 @@
  * Created on: 3 Feb 2021
  * Author: Scott Hallauer
  */
+
+#ifndef ROBOT_H
+#define ROBOT_H
+
 #include <vector>
 
 class Robot {
@@ -20,6 +24,7 @@ class Robot {
   public:
 
 		Robot(int handle, std::vector<int> motorHandles, std::vector<int> sensorHandles);
+    virtual ~Robot();
     int getHandle();
     bool setTargetVelocitySingleMotor(int motorIndex, float targetVelocity);
     bool setTargetVelocityAllMotors(float targetVelocity);
@@ -29,3 +34,5 @@ class Robot {
     bool isRunning();
 
 };
+
+#endif /* ROBOT_H */

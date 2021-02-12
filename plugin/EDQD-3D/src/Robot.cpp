@@ -8,6 +8,8 @@ Robot::Robot(int handle, std::vector<int> motorHandles, std::vector<int> sensorH
   _sensorHandles = sensorHandles;
 }
 
+Robot::~Robot() {}
+
 int Robot::getHandle() {
   return _handle;
 }
