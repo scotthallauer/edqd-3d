@@ -1,5 +1,5 @@
 #include "simExtEDQDRobot.h"
-#include "EDQDRobot.h"
+#include "CylinderEDQDRobot.h"
 #include "scriptFunctionData.h"
 #include <iostream>
 #include "simLib.h"
@@ -24,7 +24,7 @@
 
 static LIBRARY simLib;
 
-static std::vector<EDQDRobot*> allRobots;
+static std::vector<CylinderEDQDRobot*> allRobots;
 static int nextEDQDRobotHandle=0;
 static int logConsoleHandle=0;
 
@@ -69,9 +69,9 @@ void LUA_CREATE_CALLBACK(SScriptCallBack* cb)
         std::vector<float> backRelativeVelocities;
         backRelativeVelocities.push_back(inData->at(2).floatData[0]);
         backRelativeVelocities.push_back(inData->at(2).floatData[1]);
-        EDQDRobot *robot = new EDQDRobot(handle, motorHandles, sensorHandles, backRelativeVelocities);
+        CylinderEDQDRobot *robot = new CylinderEDQDRobot(handle, motorHandles, sensorHandles, backRelativeVelocities);
         allRobots.push_back(robot);
-        simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot created.\n");
+        simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot created.\n");
     }
     D.pushOutData(CScriptFunctionDataItem(handle));
     D.writeDataToStack(cb->stackID);
@@ -100,11 +100,11 @@ void LUA_DESTROY_CALLBACK(SScriptCallBack* cb)
         if (index>=0)
         {
             allRobots.erase(allRobots.begin()+index);
-            simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot destroyed.\n");
+            simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot destroyed.\n");
             success=true;
         }
         else
-            simSetLastError(LUA_DESTROY_COMMAND,"Invalid EDQDRobot handle.");
+            simSetLastError(LUA_DESTROY_COMMAND,"Invalid CylinderEDQDRobot handle.");
     }
     D.pushOutData(CScriptFunctionDataItem(success));
     D.writeDataToStack(cb->stackID);
@@ -134,11 +134,11 @@ void LUA_START_CALLBACK(SScriptCallBack* cb)
         if (index!=-1)
         {
             allRobots[index]->start();
-            simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot started.\n");
+            simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot started.\n");
             success=true;
         }
         else
-            simSetLastError(LUA_START_COMMAND,"Invalid EDQDRobot handle.");
+            simSetLastError(LUA_START_COMMAND,"Invalid CylinderEDQDRobot handle.");
     }
     D.pushOutData(CScriptFunctionDataItem(success));
     D.writeDataToStack(cb->stackID);
@@ -168,11 +168,11 @@ void LUA_STOP_CALLBACK(SScriptCallBack* cb)
         {
             allRobots[index]->stop();
             allRobots[index]->setTargetVelocityAllMotors(0.0f);
-            simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: EDQDRobot stopped.\n");
+            simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot stopped.\n");
             success=true;
         }
         else
-            simSetLastError(LUA_STOP_COMMAND,"Invalid EDQDRobot handle.");
+            simSetLastError(LUA_STOP_COMMAND,"Invalid CylinderEDQDRobot handle.");
     }
     D.pushOutData(CScriptFunctionDataItem(success));
     D.writeDataToStack(cb->stackID);
@@ -255,21 +255,7 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
             float dt=simGetSimulationTimeStep();
             for (unsigned int i=0;i<allRobots.size();i++)
             {
-                if (allRobots[i]->isRunning())
-                { // movement mode
-                    if (allRobots[i]->readSensor(3)>0)
-                        allRobots[i]->setBackMovementDuration(3.0f); // we detected an obstacle, we move backward for 3 seconds
-                    if (allRobots[i]->getBackMovementDuration()>0.0f)
-                    { // We move backward
-                        allRobots[i]->setTargetVelocitySingleMotor(0, -7.0f*allRobots[i]->getBackRelativeVelocity(0));
-                        allRobots[i]->setTargetVelocitySingleMotor(1, -7.0f*allRobots[i]->getBackRelativeVelocity(1));
-                        allRobots[i]->setBackMovementDuration(allRobots[i]->getBackMovementDuration()-dt);
-                    }
-                    else
-                    { // We move forward
-                        allRobots[i]->setTargetVelocityAllMotors(7.0f);
-                    }
-                }
+                allRobots[i]->stepController(dt);
             }
         }
     }

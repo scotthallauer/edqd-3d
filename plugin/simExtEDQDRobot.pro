@@ -59,6 +59,7 @@ HEADERS += \
     simExtEDQDRobot.h \
     EDQD-3D/include/Robot.h \
     EDQD-3D/include/EDQDRobot.h \
+    EDQD-3D/include/CylinderEDQDRobot.h \
     ../include/scriptFunctionData.h \
     ../include/scriptFunctionDataItem.h \
     ../include/simLib.h 
@@ -67,6 +68,7 @@ SOURCES += \
     simExtEDQDRobot.cpp \
     EDQD-3D/src/Robot.cpp \
     EDQD-3D/src/EDQDRobot.cpp \
+    EDQD-3D/src/CylinderEDQDRobot.cpp \
     ../common/scriptFunctionData.cpp \
     ../common/scriptFunctionDataItem.cpp \
     ../common/simLib.cpp
