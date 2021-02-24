@@ -44,7 +44,8 @@ int getEDQDRobotIndexFromHandle(int EDQDRobotHandle)
 #define LUA_CREATE_COMMAND "simEDQD.create"
 
 const int inArgs_CREATE[]={
-    3,
+    4,
+    sim_script_arg_int32,0,
     sim_script_arg_int32|sim_script_arg_table,2,
     sim_script_arg_int32|sim_script_arg_table,12,
     sim_script_arg_float|sim_script_arg_table,2,
@@ -58,18 +59,19 @@ void LUA_CREATE_CALLBACK(SScriptCallBack* cb)
     {
         std::vector<CScriptFunctionDataItem>* inData=D.getInDataPtr();
         handle=nextEDQDRobotHandle++;
+        int robotHandle = inData->at(0).int32Data[0];
         std::vector<int> motorHandles;
-        motorHandles.push_back(inData->at(0).int32Data[0]);
-        motorHandles.push_back(inData->at(0).int32Data[1]);
+        motorHandles.push_back(inData->at(1).int32Data[0]);
+        motorHandles.push_back(inData->at(1).int32Data[1]);
         std::vector<int> sensorHandles;
         for (unsigned int i=0;i<12;i++)
         {
-            sensorHandles.push_back(inData->at(1).int32Data[i]);
+            sensorHandles.push_back(inData->at(2).int32Data[i]);
         }
         std::vector<float> backRelativeVelocities;
-        backRelativeVelocities.push_back(inData->at(2).floatData[0]);
-        backRelativeVelocities.push_back(inData->at(2).floatData[1]);
-        CylinderEDQDRobot *robot = new CylinderEDQDRobot(handle, motorHandles, sensorHandles, backRelativeVelocities);
+        backRelativeVelocities.push_back(inData->at(3).floatData[0]);
+        backRelativeVelocities.push_back(inData->at(3).floatData[1]);
+        CylinderEDQDRobot *robot = new CylinderEDQDRobot(handle, robotHandle, motorHandles, sensorHandles, backRelativeVelocities);
         allRobots.push_back(robot);
         simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot created.\n");
     }
@@ -256,6 +258,11 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
             for (unsigned int i=0;i<allRobots.size();i++)
             {
                 allRobots[i]->stepController(dt);
+                float x, y, z;
+                allRobots[i]->getPosition(&x, &y, &z);
+                char buffer[50];
+                sprintf(buffer, "simExtEDQDRobot: x=%4.2f, y=%4.2f, z=%4.2f\n", x, y, z);
+                simAuxiliaryConsolePrint(logConsoleHandle, buffer);
             }
         }
     }

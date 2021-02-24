@@ -15,23 +15,24 @@
 class Robot {
   
   protected:
-
-    int _handle;
+    int _handle; // handle is the internal reference to the robot
     bool _run;
+    int _robotHandle; // robotHandle is the reference to the robot object in CoppeliaSim
     std::vector<int> _motorHandles;
     std::vector<int> _sensorHandles;
 
   public:
-
-		Robot(int handle, std::vector<int> motorHandles, std::vector<int> sensorHandles);
-    virtual ~Robot();
-    int getHandle();
+		Robot(int handle, int robotHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles);
+    virtual ~Robot() {};
+    int getHandle() { return _handle; };
+    int getRobotHandle() { return _robotHandle; };
+    void getPosition(float* x, float* y, float* z);
     bool setTargetVelocitySingleMotor(int motorIndex, float targetVelocity);
     bool setTargetVelocityAllMotors(float targetVelocity);
     int readSensor(int sensorIndex);
-    void start();
-    void stop();
-    bool isRunning();
+    void start() { _run = true; };
+    void stop() { _run = false; };
+    bool isRunning() { return _run; };
 
 };
 

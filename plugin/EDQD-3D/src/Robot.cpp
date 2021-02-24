@@ -1,17 +1,21 @@
 #include "EDQD-3D/include/Robot.h"
 #include "simLib.h"
 
-Robot::Robot(int handle, std::vector<int> motorHandles, std::vector<int> sensorHandles) {
+Robot::Robot(int handle, int robotHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles) {
 	_handle = handle;
   _run = false;
+  _robotHandle = robotHandle;
   _motorHandles = motorHandles;
   _sensorHandles = sensorHandles;
 }
 
-Robot::~Robot() {}
-
-int Robot::getHandle() {
-  return _handle;
+void Robot::getPosition(float* x, float* y, float* z) {
+  // get the absolute position (x, y, z) of the robot 
+  float position[3];
+  simGetObjectPosition(_robotHandle, -1, position);
+  *x = position[0];
+  *y = position[1];
+  *z = position[2];
 }
 
 bool Robot::setTargetVelocitySingleMotor(int motorIndex, float targetVelocity) {
@@ -21,7 +25,7 @@ bool Robot::setTargetVelocitySingleMotor(int motorIndex, float targetVelocity) {
 
 bool Robot::setTargetVelocityAllMotors(float targetVelocity) {
   bool success = true;
-  for(int i = 0; i < _motorHandles.size(); i++) {
+  for(size_t i = 0; i < _motorHandles.size(); i++) {
     if(!setTargetVelocitySingleMotor(i, targetVelocity)) {
       success = false;
     }
@@ -32,17 +36,4 @@ bool Robot::setTargetVelocityAllMotors(float targetVelocity) {
 int Robot::readSensor(int sensorIndex) {
   int result = simReadProximitySensor(_sensorHandles[sensorIndex], NULL, NULL, NULL);
   return result;
-}
-
-void Robot::start() {
-  simAuxiliaryConsolePrint(0,"simExtEDQDRobot: We're running!\n");
-  _run = true;
-}
-
-void Robot::stop() {
-  _run = false;
-}
-
-bool Robot::isRunning() {
-  return _run;
 }
