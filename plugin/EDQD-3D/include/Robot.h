@@ -12,21 +12,25 @@
 
 #include <vector>
 
+#include "EDQD-3D/include/Controller.h"
+
 class Robot {
   
   protected:
-    int _handle; // handle is the internal reference to the robot
-    bool _run;
-    int _robotHandle; // robotHandle is the reference to the robot object in CoppeliaSim
+    int _entityHandle; // entityHandle is the internal reference to the robot
+    int _bodyHandle; // bodyHandle is the reference to the robot object in CoppeliaSim
     std::vector<int> _motorHandles;
     std::vector<int> _sensorHandles;
+    Controller *_controller;
+    bool _run;
 
   public:
-		Robot(int handle, int robotHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles);
+		Robot(int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles);
     virtual ~Robot() {};
-    int getHandle() { return _handle; };
-    int getRobotHandle() { return _robotHandle; };
+    int getEntityHandle() { return _entityHandle; };
+    int getBodyHandle() { return _bodyHandle; };
     void getPosition(float* x, float* y, float* z);
+    void setPosition(float x, float y, float z);
     bool setTargetVelocitySingleMotor(int motorIndex, float targetVelocity);
     bool setTargetVelocityAllMotors(float targetVelocity);
     int readSensor(int sensorIndex);

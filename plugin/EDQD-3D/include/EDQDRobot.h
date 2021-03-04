@@ -21,7 +21,7 @@ class EDQDRobot: public Robot {
     std::vector<float> _backRelativeVelocities;
 
   public:
-		EDQDRobot(int handle, int robotHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities);
+		EDQDRobot(int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities);
     virtual ~EDQDRobot();
     void setBackMovementDuration(float backMovementDuration);
     float getBackMovementDuration();

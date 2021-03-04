@@ -1,21 +1,30 @@
 #include "EDQD-3D/include/Robot.h"
 #include "simLib.h"
 
-Robot::Robot(int handle, int robotHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles) {
-	_handle = handle;
-  _run = false;
-  _robotHandle = robotHandle;
+Robot::Robot(int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles) {
+	_entityHandle = entityHandle;
+  _bodyHandle = bodyHandle;
   _motorHandles = motorHandles;
   _sensorHandles = sensorHandles;
+  _run = false;
 }
 
 void Robot::getPosition(float* x, float* y, float* z) {
   // get the absolute position (x, y, z) of the robot 
   float position[3];
-  simGetObjectPosition(_robotHandle, -1, position);
+  simGetObjectPosition(_bodyHandle, -1, position);
   *x = position[0];
   *y = position[1];
   *z = position[2];
+}
+
+void Robot::setPosition(float x, float y, float z) {
+  // set the absolute position (x, y, z) of the robot 
+  float position[3];
+  position[0] = x;
+  position[1] = y;
+  position[2] = z;
+  simSetObjectPosition(_bodyHandle, -1, position);
 }
 
 bool Robot::setTargetVelocitySingleMotor(int motorIndex, float targetVelocity) {

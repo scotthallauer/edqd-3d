@@ -32,7 +32,7 @@ int getEDQDRobotIndexFromHandle(int EDQDRobotHandle)
 {
     for (unsigned int i=0;i<allRobots.size();i++)
     {
-        if (allRobots[i]->getHandle()==EDQDRobotHandle)
+        if (allRobots[i]->getEntityHandle()==EDQDRobotHandle)
             return(i);
     }
     return(-1);

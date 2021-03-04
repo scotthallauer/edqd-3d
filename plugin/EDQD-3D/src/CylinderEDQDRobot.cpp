@@ -1,8 +1,8 @@
 #include "EDQD-3D/include/CylinderEDQDRobot.h"
 #include "simLib.h"
 
-CylinderEDQDRobot::CylinderEDQDRobot(int handle, int robotHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities)
-  : EDQDRobot(handle, robotHandle, motorHandles, sensorHandles, backRelativeVelocities) {
+CylinderEDQDRobot::CylinderEDQDRobot(int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities)
+  : EDQDRobot(entityHandle, bodyHandle, motorHandles, sensorHandles, backRelativeVelocities) {
 }
 
 CylinderEDQDRobot::~CylinderEDQDRobot() {}
