@@ -14,6 +14,8 @@
 
 #include "EDQD-3D/include/Controller.h"
 
+class World;
+
 class Robot {
   
   protected:
@@ -22,13 +24,16 @@ class Robot {
     std::vector<int> _motorHandles;
     std::vector<int> _sensorHandles;
     Controller *_controller;
+    World *_world;
     bool _run;
 
   public:
-		Robot(int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles);
+		Robot(World *world, int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles);
     virtual ~Robot() {};
     int getEntityHandle() { return _entityHandle; };
     int getBodyHandle() { return _bodyHandle; };
+    Controller* getController() { return _controller; };
+    World* getWorld() { return _world; };
     void getPosition(float* x, float* y, float* z);
     void setPosition(float x, float y, float z);
     bool setTargetVelocitySingleMotor(int motorIndex, float targetVelocity);

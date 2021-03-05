@@ -1,5 +1,6 @@
 #include "simExtEDQDRobot.h"
 #include "CylinderEDQDRobot.h"
+#include "World.h"
 #include "scriptFunctionData.h"
 #include <iostream>
 #include "simLib.h"
@@ -24,15 +25,15 @@
 
 static LIBRARY simLib;
 
-static std::vector<CylinderEDQDRobot*> allRobots;
+static World world;
 static int nextEDQDRobotHandle=0;
 static int logConsoleHandle=0;
 
 int getEDQDRobotIndexFromHandle(int EDQDRobotHandle)
 {
-    for (unsigned int i=0;i<allRobots.size();i++)
+    for (int i=0; i<world.getNbOfRobots(); i++)
     {
-        if (allRobots[i]->getEntityHandle()==EDQDRobotHandle)
+        if (world.getRobot(i)->getEntityHandle()==EDQDRobotHandle)
             return(i);
     }
     return(-1);
@@ -71,8 +72,8 @@ void LUA_CREATE_CALLBACK(SScriptCallBack* cb)
         std::vector<float> backRelativeVelocities;
         backRelativeVelocities.push_back(inData->at(3).floatData[0]);
         backRelativeVelocities.push_back(inData->at(3).floatData[1]);
-        CylinderEDQDRobot *robot = new CylinderEDQDRobot(handle, robotHandle, motorHandles, sensorHandles, backRelativeVelocities);
-        allRobots.push_back(robot);
+        CylinderEDQDRobot *robot = new CylinderEDQDRobot(&world, handle, robotHandle, motorHandles, sensorHandles, backRelativeVelocities);
+        world.addRobot(robot);
         simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot created.\n");
     }
     D.pushOutData(CScriptFunctionDataItem(handle));
@@ -101,7 +102,7 @@ void LUA_DESTROY_CALLBACK(SScriptCallBack* cb)
         int index=getEDQDRobotIndexFromHandle(handle);
         if (index>=0)
         {
-            allRobots.erase(allRobots.begin()+index);
+            world.deleteRobot(index);
             simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot destroyed.\n");
             success=true;
         }
@@ -135,7 +136,7 @@ void LUA_START_CALLBACK(SScriptCallBack* cb)
         int index=getEDQDRobotIndexFromHandle(handle);
         if (index!=-1)
         {
-            allRobots[index]->start();
+            world.getRobot(index)->start();
             simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot started.\n");
             success=true;
         }
@@ -168,8 +169,8 @@ void LUA_STOP_CALLBACK(SScriptCallBack* cb)
         int index=getEDQDRobotIndexFromHandle(handle);
         if (index!=-1)
         {
-            allRobots[index]->stop();
-            allRobots[index]->setTargetVelocityAllMotors(0.0f);
+            world.getRobot(index)->stop();
+            world.getRobot(index)->setTargetVelocityAllMotors(0.0f);
             simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot stopped.\n");
             success=true;
         }
@@ -255,11 +256,11 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
         if ( (customData==NULL)||(std::string("EDQDRobot").compare((char*)customData)==0) ) // is the command also meant for EDQDRobot?
         {
             float dt=simGetSimulationTimeStep();
-            for (unsigned int i=0;i<allRobots.size();i++)
+            for (int i=0; i<world.getNbOfRobots(); i++)
             {
-                allRobots[i]->stepController(dt);
+                ((CylinderEDQDRobot*)world.getRobot(i))->stepController(dt);
                 float x, y, z;
-                allRobots[i]->getPosition(&x, &y, &z);
+                world.getRobot(i)->getPosition(&x, &y, &z);
                 char buffer[50];
                 sprintf(buffer, "simExtEDQDRobot: x=%4.2f, y=%4.2f, z=%4.2f\n", x, y, z);
                 simAuxiliaryConsolePrint(logConsoleHandle, buffer);
@@ -269,7 +270,7 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
 
     if (message==sim_message_eventcallback_simulationended)
     { // simulation ended. Destroy all EDQDRobot instances:
-        allRobots.clear();
+        world.clearRobots();
     }
 
     simSetIntegerParameter(sim_intparam_error_report_mode,errorModeSaved); // restore previous settings

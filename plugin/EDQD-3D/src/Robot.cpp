@@ -1,7 +1,8 @@
 #include "EDQD-3D/include/Robot.h"
 #include "simLib.h"
 
-Robot::Robot(int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles) {
+Robot::Robot(World *world, int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles) {
+  _world = world;
 	_entityHandle = entityHandle;
   _bodyHandle = bodyHandle;
   _motorHandles = motorHandles;

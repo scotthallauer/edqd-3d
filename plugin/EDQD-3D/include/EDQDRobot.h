@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "EDQD-3D/include/Robot.h"
+#include "EDQD-3D/include/EDQDController.h"
 
 class EDQDRobot: public Robot {
   
@@ -21,8 +22,9 @@ class EDQDRobot: public Robot {
     std::vector<float> _backRelativeVelocities;
 
   public:
-		EDQDRobot(int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities);
+		EDQDRobot(World *world, int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities);
     virtual ~EDQDRobot();
+    EDQDController* getController() { return (EDQDController*)Robot::getController(); }
     void setBackMovementDuration(float backMovementDuration);
     float getBackMovementDuration();
     float getBackRelativeVelocity(int motorIndex);

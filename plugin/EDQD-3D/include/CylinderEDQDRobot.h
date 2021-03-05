@@ -19,7 +19,7 @@ class CylinderEDQDRobot: public EDQDRobot {
   protected:
 
   public:
-		CylinderEDQDRobot(int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities);
+		CylinderEDQDRobot(World *world, int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities);
     virtual ~CylinderEDQDRobot();
     void stepController(float timeStep);
 
