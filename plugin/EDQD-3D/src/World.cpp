@@ -1,11 +1,20 @@
 #include "EDQD-3D/include/World.h"
+#include "EDQD-3D/include/Robot.h"
 
 World::World() {
   _iterations = 0;
 }
 
-Robot* World::getRobot(int index) {
+Robot* World::getRobotByIndex(int index) {
   return _robots[index];
+}
+
+Robot* World::getRobotByHandle(int entityHandle) {
+  for(int i = 0; i < getNbOfRobots(); i++) {
+    if (_robots[i]->getEntityHandle() == entityHandle)
+      return _robots[i];
+  }
+  throw "No robot exists with the specified entity handle.";
 }
 
 void World::addRobot(Robot *robot) {

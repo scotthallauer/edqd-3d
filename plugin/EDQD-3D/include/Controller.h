@@ -12,13 +12,19 @@
 
 #include <iostream>
 
+class World;
+
 class Controller {
 
+	protected:
+		World *_world;
+		int _robotEntityHandle;
+
 	public:
-		Controller() {};
+		Controller(World *world, int robotEntityHandle);
     virtual ~Controller() {};
 		virtual void reset() = 0;
-		virtual void step() = 0;
+		virtual void step(float timeStep) = 0;
 
 };
 

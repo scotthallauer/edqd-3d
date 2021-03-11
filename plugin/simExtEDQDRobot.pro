@@ -62,6 +62,7 @@ HEADERS += \
     EDQD-3D/include/CylinderEDQDRobot.h \
     EDQD-3D/include/Controller.h \
     EDQD-3D/include/EDQDController.h \
+    EDQD-3D/include/CylinderEDQDController.h \
     EDQD-3D/include/World.h \
     ../include/scriptFunctionData.h \
     ../include/scriptFunctionDataItem.h \
@@ -72,7 +73,9 @@ SOURCES += \
     EDQD-3D/src/Robot.cpp \
     EDQD-3D/src/EDQDRobot.cpp \
     EDQD-3D/src/CylinderEDQDRobot.cpp \
+    EDQD-3D/src/Controller.cpp \
     EDQD-3D/src/EDQDController.cpp \
+    EDQD-3D/src/CylinderEDQDController.cpp \
     EDQD-3D/src/World.cpp \
     ../common/scriptFunctionData.cpp \
     ../common/scriptFunctionDataItem.cpp \

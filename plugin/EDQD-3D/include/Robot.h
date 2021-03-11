@@ -12,8 +12,7 @@
 
 #include <vector>
 
-#include "EDQD-3D/include/Controller.h"
-
+class Controller;
 class World;
 
 class Robot {

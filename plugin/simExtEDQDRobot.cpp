@@ -33,7 +33,7 @@ int getEDQDRobotIndexFromHandle(int EDQDRobotHandle)
 {
     for (int i=0; i<world.getNbOfRobots(); i++)
     {
-        if (world.getRobot(i)->getEntityHandle()==EDQDRobotHandle)
+        if (world.getRobotByIndex(i)->getEntityHandle()==EDQDRobotHandle)
             return(i);
     }
     return(-1);
@@ -136,7 +136,7 @@ void LUA_START_CALLBACK(SScriptCallBack* cb)
         int index=getEDQDRobotIndexFromHandle(handle);
         if (index!=-1)
         {
-            world.getRobot(index)->start();
+            world.getRobotByIndex(index)->start();
             simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot started.\n");
             success=true;
         }
@@ -169,8 +169,8 @@ void LUA_STOP_CALLBACK(SScriptCallBack* cb)
         int index=getEDQDRobotIndexFromHandle(handle);
         if (index!=-1)
         {
-            world.getRobot(index)->stop();
-            world.getRobot(index)->setTargetVelocityAllMotors(0.0f);
+            world.getRobotByIndex(index)->stop();
+            world.getRobotByIndex(index)->setTargetVelocityAllMotors(0.0f);
             simAuxiliaryConsolePrint(logConsoleHandle,"simExtEDQDRobot: CylinderEDQDRobot stopped.\n");
             success=true;
         }
@@ -258,9 +258,9 @@ SIM_DLLEXPORT void* simMessage(int message,int* auxiliaryData,void* customData,i
             float dt=simGetSimulationTimeStep();
             for (int i=0; i<world.getNbOfRobots(); i++)
             {
-                ((CylinderEDQDRobot*)world.getRobot(i))->stepController(dt);
+                ((CylinderEDQDRobot*)world.getRobotByIndex(i))->stepController(dt);
                 float x, y, z;
-                world.getRobot(i)->getPosition(&x, &y, &z);
+                world.getRobotByIndex(i)->getPosition(&x, &y, &z);
                 char buffer[50];
                 sprintf(buffer, "simExtEDQDRobot: x=%4.2f, y=%4.2f, z=%4.2f\n", x, y, z);
                 simAuxiliaryConsolePrint(logConsoleHandle, buffer);

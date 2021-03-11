@@ -9,10 +9,10 @@ class EDQDController: public Controller {
     int _iteration;
 
   public:
-    EDQDController();
+    EDQDController(World *world, int robotEntityHandle);
     ~EDQDController() {};
     void reset();
-    void step();
+    void step(float timeStep);
 
 };
 

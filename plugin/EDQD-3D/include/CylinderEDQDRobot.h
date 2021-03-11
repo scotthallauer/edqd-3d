@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "EDQD-3D/include/EDQDRobot.h"
+#include "EDQD-3D/include/CylinderEDQDController.h"
 
 class CylinderEDQDRobot: public EDQDRobot {
   
@@ -21,6 +22,7 @@ class CylinderEDQDRobot: public EDQDRobot {
   public:
 		CylinderEDQDRobot(World *world, int entityHandle, int bodyHandle, std::vector<int> motorHandles, std::vector<int> sensorHandles, std::vector<float> backRelativeVelocities);
     virtual ~CylinderEDQDRobot();
+    CylinderEDQDController* getController() { return (CylinderEDQDController*)Robot::getController(); }
     void stepController(float timeStep);
 
 };

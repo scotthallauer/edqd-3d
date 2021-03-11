@@ -17,7 +17,8 @@ class World {
   public:
 		World();
 		virtual ~World() {};
-		Robot* getRobot(int index);
+		Robot* getRobotByIndex(int index);
+		Robot* getRobotByHandle(int entityHandle);
 		void addRobot(Robot *robot);
     void deleteRobot(int index);
     void clearRobots();
